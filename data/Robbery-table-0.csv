@@ -1,7 +1,7 @@
 ,0,1,2,3
 0,Model:,MixedLM,Dependent Variable:,ICCS0401_P_HTHAB
-1,No. Observations:,33,Method:,REML
-2,No. Groups:,33,Scale:,735.6151
-3,Min. group size:,1,Log-Likelihood:,-160.8999
+1,No. Observations:,27,Method:,REML
+2,No. Groups:,27,Scale:,633.7850
+3,Min. group size:,1,Log-Likelihood:,-128.9979
 4,Max. group size:,1,Converged:,Yes
 5,Mean group size:,1.0,,

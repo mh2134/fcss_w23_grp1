@@ -1,40 +1,40 @@
 ICCS0101	Intentional homicide:	
-threw countries: {'EU27_2020', 'IS', 'LI'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'MK'}
 ICCS0102	Attempted intentional homicide:	
-threw countries: {'PT', 'EU27_2020', 'SK', 'IS', 'LI', 'NL', 'TR'}
+threw countries: {'EU27_2007', 'EU27_2020', 'NL', 'PT', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'SK', 'MK'}
 ICCS020111	Serious assault:	
-threw countries: {'EU27_2020', 'IS', 'LI', 'HU', 'TR'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'HU', 'IS', 'CH', 'EU', 'MK'}
 ICCS020221	Kidnapping:	
-threw countries: {'EU27_2020', 'DK', 'NO', 'IS', 'FR', 'LI', 'BE', 'TR', 'PL', 'SE'}
+threw countries: {'EU27_2007', 'BE', 'EA19', 'CH', 'EU27_2020', 'EA20', 'TR', 'EU28', 'FR', 'DK', 'SE', 'NO', 'AL', 'ME', 'LI', 'RS', 'IS', 'EU', 'PL', 'MK'}
 ICCS0301	Sexual violence:	
-threw countries: {'EU27_2020', 'IS', 'TR', 'LI'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'MK'}
 ICCS03011	Rape:	
-threw countries: {'EU27_2020', 'IT', 'IS', 'LI', 'TR'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'IT', 'RS', 'IS', 'CH', 'EU', 'MK'}
 ICCS03012	Sexual assault:	
-threw countries: {'EU27_2020', 'IT', 'IS', 'LI', 'LU', 'HU'}
+threw countries: {'EU27_2007', 'LU', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'IT', 'RS', 'HU', 'IS', 'CH', 'EU', 'MK'}
 ICCS0302	Sexual exploitation:	
-threw countries: {'EU27_2020', 'ME', 'SI', 'BG', 'IS', 'MT', 'LI', 'LU', 'TR', 'EE'}
+threw countries: {'EU27_2007', 'EA19', 'CH', 'EU27_2020', 'LU', 'MT', 'EA20', 'TR', 'EU28', 'NO', 'BG', 'EE', 'SI', 'AL', 'ME', 'LI', 'RS', 'IS', 'EU', 'MK'}
 ICCS0401	Robbery:	
-threw countries: {'EU27_2020', 'IS', 'LI'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'MK'}
 ICCS0501	Burglary:	
-threw countries: {'EU27_2020', 'NO', 'AL', 'IT', 'IS', 'LI', 'HU', 'EE'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'IT', 'RS', 'HU', 'IS', 'CH', 'EU', 'EE', 'MK'}
 ICCS05012	Burglary of private residential premises:	
-threw countries: {'EU27_2020', 'NO', 'ME', 'IS', 'FR', 'LI', 'LU', 'HU', 'IE', 'CY'}
+threw countries: {'EU27_2007', 'EA19', 'CH', 'IE', 'EU27_2020', 'LU', 'EA20', 'TR', 'EU28', 'FR', 'CY', 'NO', 'AL', 'ME', 'LI', 'RS', 'HU', 'IS', 'EU', 'MK'}
 ICCS0502	Theft:	
-threw countries: {'EU27_2020', 'IS', 'LI'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'MK'}
 ICCS05021	Theft of a motorized vehicle or parts thereof:	
-threw countries: {'EU27_2020', 'IS', 'FR', 'LI', 'HU', 'CY'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'CY', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'HU', 'FR', 'CH', 'IS', 'EU', 'MK'}
 ICCS0601	Unlawful acts involving controlled drugs or precursors:	
-threw countries: {'EU27_2020', 'IS', 'TR', 'LI'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'MK'}
 ICCS0701	Fraud:	
-threw countries: {'EU27_2020', 'IS', 'LI', 'NL', 'TR'}
+threw countries: {'EU27_2007', 'EU27_2020', 'NL', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'MK'}
 ICCS0703	Corruption:	
-threw countries: {'EU27_2020', 'IS', 'TR', 'LI'}
+threw countries: {'EU27_2007', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'MK'}
 ICCS07031	Bribery:	
-threw countries: {'EU27_2020', 'NO', 'IS', 'LI', 'NL', 'TR', 'IE'}
+threw countries: {'EU27_2007', 'EU27_2020', 'NL', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'IE', 'MK'}
 ICCS07041	Money laundering:	
-threw countries: {'EU27_2020', 'SI', 'IS', 'LI', 'LU', 'TR', 'IE', 'CY'}
+threw countries: {'EU27_2007', 'EA19', 'CH', 'IE', 'EU27_2020', 'LU', 'EA20', 'TR', 'EU28', 'CY', 'NO', 'SI', 'AL', 'ME', 'LI', 'RS', 'IS', 'EU', 'MK'}
 ICCS0903	Acts against computer systems:	
-threw countries: {'EU27_2020', 'DK', 'NO', 'IS', 'LI', 'LU', 'RS', 'TR', 'CH'}
+threw countries: {'EU27_2007', 'LU', 'EU27_2020', 'AL', 'ME', 'EA19', 'EA20', 'NO', 'LI', 'TR', 'EU28', 'RS', 'IS', 'CH', 'EU', 'DK', 'MK'}
 ICCS09051	Participation in an organized criminal group:	
-threw countries: {'EU27_2020', 'DK', 'LV', 'NO', 'IS', 'LI', 'HU', 'RS', 'NL', 'TR', 'SE', 'IE'}
+threw countries: {'EU27_2007', 'EA19', 'CH', 'IE', 'EU27_2020', 'EA20', 'TR', 'EU28', 'DK', 'SE', 'NO', 'NL', 'AL', 'ME', 'LI', 'RS', 'HU', 'LV', 'IS', 'EU', 'MK'}
