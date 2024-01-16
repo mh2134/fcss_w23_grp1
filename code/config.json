@@ -42,5 +42,36 @@
       "columns": "unit_code",
       "values": "OBS_VALUE"
     }
+  },
+  // 2do: per 1k --> per 100k
+  "povertyRisk": {
+    "fName": "People_risk_poverty_or_social_exclusion_sdg_01_10_linear",
+    "columns": "sex|age|unit|freq|geo",
+    "processing": {
+//      "groupby": "icd10",
+      "index": "geo_code",
+      "columns": "unit",
+      "values": "OBS_VALUE"
+    }
+  },
+  "unempRate": {
+    "fName": "Unemployment_rate_tipsun20_linear",
+    "columns": "sex|age|unit|freq|geo",
+    "processing": {
+//      "groupby": "icd10",
+      "index": "geo_code",
+      "columns": "unit",
+      "values": "OBS_VALUE"
+    }
+  },
+  "healthYears": {
+    "fName": "Healthy_life_years_hlth_hlye_linear",
+    "columns": "sex|indic_he|unit|freq|geo",
+    "processing": {
+//      "groupby": "icd10",
+      "index": "geo_code",
+      "columns": "unit",
+      "values": "OBS_VALUE"
+    }
   }
 }
