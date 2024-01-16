@@ -1,0 +1,46 @@
+{
+  "crime": {
+    "fName": "Crimes_per_100tsd_estat_crim_off_cat_en",
+//    "fName": "crime",
+    "columns": "iccs|freq|unit|geo",
+    "processing": {
+      "groupby": "iccs",
+      "index": "geo_code",
+      "columns": "unit_code",
+      "values": "OBS_VALUE"
+    }
+  },
+
+  "Gini": {
+    "fName": "Gini_index_tessi190_linear",
+//    "fName": "income_gini",
+    "columns": "indic_il|freq|geo",
+    "processing": {
+      //"groupby": "indic_il",
+      "index": "geo_code",
+      "columns": "indic_il",
+      "values": "OBS_VALUE"
+    }
+  },
+  "socNetPart": {
+    "fName": "Participation_in_social_networks_testat_tin00127_en",
+//    "fName": "social_network_participation",
+    "columns": "indic_is|ind_type|freq|unit|geo",
+    "processing": {
+      //"groupby": "indic_il",
+      "index": "geo_code",
+      "columns": "indic_is",
+      "values": "OBS_VALUE"
+    }
+  },
+  "alcDeath": {
+    "fName": "Death_to_alcoholic_abuse_tps00140_linear",
+    "columns": "icd10|age|unit|freq|geo",
+    "processing": {
+      "groupby": "icd10",
+      "index": "geo_code",
+      "columns": "unit_code",
+      "values": "OBS_VALUE"
+    }
+  }
+}
