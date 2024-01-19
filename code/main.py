@@ -6,6 +6,7 @@ author: swekia
 import pandas as pd
 import json5 as json
 from utils import *
+import numpy as np
 
 import statsmodels.formula.api as smf
 import statsmodels.api as sma
@@ -13,13 +14,120 @@ from statsmodels.formula.api import ols
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import re
+from statsmodels.graphics.factorplots import interaction_plot
 
 # old = pd.read_csv("data/old.csv")
 # new = pd.read_csv("data/new.csv")
 
+def get_metro_region2(strin):
+    if re.match(r"\w{2}_NM", strin):
+        return "NM";  # Non-Metropole
+    elif re.match(r"^\w{2}$", strin):
+        return "WC";  # Whole Country
+    elif re.match(r"\w{2}\d{3}(M|MC)$", strin):
+        return "M";  # Metropole
+    else:
+        raise ValueError(f"not pattern match for {strin.split(':')[0]}")
+
+df = pd.read_csv("data/df_allmetro.csv")
+crimes = list(df["iccs"].unique())
+df["MvsNM"] = df["metroreg"].apply(lambda x: get_metro_region2(x));
+
 if not os.path.exists("plots"):
     os.makedirs("plots")
 
+unempDF = pd.read_csv("raw_data/Unemployment_met_lfu3pers_linear.csv")
+crimeDF = pd.read_csv("raw_data/Crime_in_Metropoles_estat_met_crim_gen_en.csv")
+gdpDF = pd.read_csv("raw_data/GDP_metro_10r_3gdp_linear.csv")
+popDF = pd.read_csv("raw_data/Population_met_pjangrp3_linear.csv")
+unempDF = unempDF[unempDF["OBS_VALUE"].notna()]
+crimeDF = crimeDF[crimeDF["OBS_VALUE"].notna()]
+gdpDF = gdpDF[gdpDF["OBS_VALUE"].notna()]
+
+def get_metro_region(strin):
+    if re.match(r"\w{2}_NM", strin.split(':')[0]):
+        return "NM";  # Non-Metropole
+    elif re.match(r"^\w{2}$", strin.split(':')[0]):
+        return "WC";  # Whole Country
+    elif re.match(r"\w{2}\d{3}(M|MC)$", strin.split(':')[0]):
+        return "M";  # Metropole
+    else:
+        raise ValueError(f"not pattern match for {strin.split(':')[0]}")
+
+
+# gdpDF["MvsNM"] = gdpDF["metroreg"].apply(lambda x: get_metro_region(x));
+# unempDF["MvsNM"] = gdpDF["metroreg"].apply(lambda x: get_metro_region(x));
+# crimeDF["MvsNM"] = crimeDF["metroreg"].apply(lambda x: get_metro_region(x));
+crimeDF["nCrimes"] = crimeDF["OBS_VALUE"]
+for df in [crimeDF]:
+    del df["DATAFLOW"], df["LAST UPDATE"], df["OBS_FLAG"], df["OBS_VALUE"]
+
+gdpDF["gdp"] = gdpDF["OBS_VALUE"]
+del gdpDF["OBS_VALUE"], gdpDF["DATAFLOW"], gdpDF["LAST UPDATE"], gdpDF["OBS_FLAG"], gdpDF["freq"]
+popDF["population"] = popDF["OBS_VALUE"]
+del popDF["OBS_VALUE"], popDF["age"], popDF["DATAFLOW"], popDF["LAST UPDATE"], popDF["OBS_FLAG"], popDF["freq"]
+# sinngem. gdpDF["gdp"] * popDF["population"] / 1000
+# merge gdp and population
+allDF = pd.merge(left=gdpDF, right=popDF, on=["metroreg", "TIME_PERIOD"], suffixes=["_gdp", "_pop"])
+# normalise gdp on per thousand persons
+allDF = allDF[allDF["population"] != 0]
+allDF["gdp_norm"] = allDF["gdp"] * allDF["population"] / 1000
+
+# split unemployment data into male and female for interaction term
+for df in [unempDF]:
+    del df["DATAFLOW"], df["LAST UPDATE"], df["OBS_FLAG"], df["age"]
+allDF = pd.merge(left=allDF, right=unempDF, on=["metroreg", "TIME_PERIOD", "sex"])
+allDF["unit_unemp"] = allDF["unit"]
+del allDF["unit"]
+allDFf = allDF[allDF["sex"] == "F:Females"]
+allDFf.loc[allDFf.index, "unemp_F"] = allDFf["OBS_VALUE"]
+del allDFf["sex"]
+allDFm = allDF[allDF["sex"] == "M:Males"]
+allDFm.loc[allDFm.index, "unemp_M"] = allDFm["OBS_VALUE"]
+del allDFm["sex"]
+# unempDFf = unempDF[unempDF["sex"] == "F:Females"]
+# unempDFf.loc[unempDFf.index, "unemp_F"] = unempDFf["OBS_VALUE"]
+# del unempDFf["sex"]
+# unempDFm = unempDF[unempDF["sex"] == "M:Males"]
+# unempDFm.loc[unempDFm.index, "unemp_M"] = unempDFm["OBS_VALUE"]
+# del unempDFm["sex"]
+
+# a = pd.merge(left=unempDFf, right=unempDFm, on=["metroreg", "TIME_PERIOD", "unit", "freq"])
+a = pd.merge(left=allDFf, right=allDFm, on=["metroreg", "TIME_PERIOD"])
+
+c = pd.merge(left=a, right=crimeDF, on=["metroreg", "TIME_PERIOD"])
+c["MvsNM"] = c["metroreg"].apply(lambda x: get_metro_region(x));
+c.to_csv("data/table4regression.csv")
+exit()
+# 2do: make this more bulletproof
+c["country"] = c["metroreg"].apply(lambda x: x.split(':')[0][0:2])
+c["iccs_c"] = c["iccs"].apply(lambda x: x.split(':')[0])
+c = c[c["MvsNM"] != "WC"]
+factors = ["MvsNM", "gdp"]
+interactions = ["unemp_F", "unemp_M"]
+c[["gdp", "unemp_F", "unemp_M"]].corr()
+
+c = c[c["iccs_c"].isin(crimes)]
+model = smf.mixedlm(f"nCrimes ~ {' + '.join(factors)} + {':'.join(interactions)}", data=c, groups=c["country"])
+result = model.fit()
+# model = smf.mixedlm(f"Nr_Crimes ~ TIME_PERIOD + socnet", data=df, groups=df["geo"], re_formula="~TIME_PERIOD")
+result = model.fit()
+# df["crimes_pred"] = result.predict()
+result.summary()
+
+sns.boxplot(c, hue="MvsNM", y="nCrimes", x="TIME_PERIOD")
+plt.show()
+
+sns.scatterplot(c, x="unemp_F", y="nCrimes", hue="MvsNM")
+plt.savefig("plots/nCrimes_unemp_F_MvsNM.png")
+plt.show()
+sns.scatterplot(c, x="unemp_M", y="nCrimes", hue="MvsNM")
+plt.savefig("plots/nCrimes_unemp_M_MvsNM.png")
+plt.show()
+# sma.graphics.influence_plot(model, criterion="cooks")
+
+print('.')
 # with open("code/config.json", 'r') as f:
 #     cfg = json.load(f)
 #
