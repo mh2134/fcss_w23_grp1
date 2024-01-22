@@ -119,31 +119,49 @@ allDF["MvsNM"] = allDF["metroreg"].apply(lambda x: get_metro_region(x));
 allDF["country"] = allDF["metroreg"].apply(lambda x: x.split(':')[0][0:2])
 allDF["iccs_code"] = allDF["iccs"].apply(lambda x: x.split(':')[0])
 allDF["iccs_name"] = allDF["iccs"].apply(lambda x: ' '.join(x.split(':')[1:]))
+allDF.loc[allDF.index, "unit_gdp_code"] = allDF["unit_gdp"].apply(lambda x: x.split(':')[0])
+allDF.loc[allDF.index, "unit_gdp_name"] = allDF["unit_gdp"].apply(lambda x: ' '.join(x.split(':')[1:]))
+del allDF["unit_gdp"]
 allDF.to_csv("data/table4regression.csv")
 
-allDF = allDF[allDF["MvsNM"] != "WC"]
-factors = ["MvsNM", "gdp"]
-interactions = ["unemp_F", "unemp_M"]
-allDF[["gdp", "unemp_F", "unemp_M"]].corr()
-
-allDF = allDF[allDF["iccs_c"].isin(crimes)]
-model = smf.mixedlm(f"nCrimes ~ {' + '.join(factors)} + {':'.join(interactions)}", data=allDF, groups=allDF["country"])
-result = model.fit()
-# model = smf.mixedlm(f"Nr_Crimes ~ TIME_PERIOD + socnet", data=df, groups=df["geo"], re_formula="~TIME_PERIOD")
-result = model.fit()
-# df["crimes_pred"] = result.predict()
-result.summary()
-
-sns.boxplot(allDF, hue="MvsNM", y="nCrimes", x="TIME_PERIOD")
+regDF = allDF[(allDF["MvsNM"] != "WC") & (allDF["unit_gdp_code"] == "PPS_EU27_2020_HAB")]
+factors = ["MvsNM", "gdp_norm"]
+interactions = ["unemp_norm_F", "unemp_norm_M"]
+# correlation of factors
+sns.heatmap(regDF[["nCrimes_norm", "gdp_norm", "unemp_norm_F", "unemp_norm_M"]].corr(), cmap="seismic",
+            vmin=-1, vmax=1)
+plt.tight_layout()
+plt.savefig("plots/correlation_factors.png")
 plt.show()
 
-sns.scatterplot(allDF, x="unemp_F", y="nCrimes", hue="MvsNM")
-plt.savefig("plots/nCrimes_unemp_F_MvsNM.png")
-plt.show()
-sns.scatterplot(allDF, x="unemp_M", y="nCrimes", hue="MvsNM")
-plt.savefig("plots/nCrimes_unemp_M_MvsNM.png")
-plt.show()
-# sma.graphics.influence_plot(model, criterion="cooks")
+# allDF = allDF[allDF["iccs_c"].isin(crimes)]
+for crime, data in regDF.groupby(by="iccs_code"):
+    print(f"regression for crime {crime} ({data['iccs_name'].unique()[0]})")
+    model = smf.mixedlm(f"nCrimes_norm ~ {' + '.join(factors)} + {':'.join(interactions)}",
+                        data=data, groups=data["country"])
+    # model = smf.mixedlm(f"nCrimes_norm ~ TIME_PERIOD + {' + '.join(factors)} + {':'.join(interactions)}",
+    #                     data=data, groups=data["country"], re_formula="~ TIME_PERIOD")
+    result = model.fit()
+    # df["crimes_pred"] = result.predict()
+    print(result.summary())
+    with open(f"{data['iccs_name'].unique()[0]}.txt", 'w') as f:
+        # Write the summary to the file
+        f.write(result.summary().as_text())
+
+    sns.boxplot(data, hue="MvsNM", y="nCrimes_norm", x="TIME_PERIOD")
+    plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
+    plt.savefig(f"plots/Timeline_nCrimes_MvsNM_{data['iccs_name'].unique()[0]}.png")
+    plt.show()
+
+    sns.scatterplot(data, x="unemp_norm_F", y="nCrimes_norm", hue="MvsNM")
+    plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
+    plt.savefig(f"plots/nCrimes_unemp_F_MvsNM_{data['iccs_name'].unique()[0]}.png")
+    plt.show()
+    sns.scatterplot(data, x="unemp_norm_M", y="nCrimes_norm", hue="MvsNM")
+    plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
+    plt.savefig(f"plots/nCrimes_unemp_M_MvsNM_{data['iccs_name'].unique()[0]}.png")
+    plt.show()
+    # sma.graphics.influence_plot(model, criterion="cooks")
 
 print('.')
 # with open("code/config.json", 'r') as f:
