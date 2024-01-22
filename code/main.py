@@ -144,9 +144,10 @@ for crime, data in regDF.groupby(by="iccs_code"):
     result = model.fit()
     # df["crimes_pred"] = result.predict()
     print(result.summary())
-    with open(f"{data['iccs_name'].unique()[0]}.txt", 'w') as f:
+    with open(f"data/Model-{'-'.join(data['iccs_name'].unique()[0].split(' '))}.txt", 'w') as f:
         # Write the summary to the file
         f.write(result.summary().as_text())
+    result.params.to_csv(f"data/Params-{'-'.join(data['iccs_name'].unique()[0].split(' '))}.txt", sep="\t")
 
     sns.boxplot(data, hue="MvsNM", y="nCrimes_norm", x="TIME_PERIOD")
     plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
