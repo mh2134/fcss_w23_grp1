@@ -7,7 +7,7 @@ import pandas as pd
 import json5 as json
 from utils import *
 import numpy as np
-
+from sklearn.model_selection import train_test_split
 import statsmodels.formula.api as smf
 import statsmodels.api as sma
 from statsmodels.formula.api import ols
@@ -149,13 +149,16 @@ cols.remove("income")
 # merge values of non-metropole regions together (NM)
 incomeDF = incomeDF.groupby(cols).mean().reset_index()
 allDF = pd.merge(left=allDF, right=incomeDF, on=['TIME_PERIOD', 'MvsNM', 'country'])
+for col in ["nCrimes_norm", "unemp_norm_M", "unemp_norm_F"]:
+    allDF.loc[allDF.index, col] = allDF[col] * 1000  # value per 1000 people
 
 allDF.to_csv("data/table4regression.csv")
 
 regDF = allDF[(allDF["MvsNM"] != "WC") & (allDF["unit_gdp_code"] == "PPS_EU27_2020_HAB") &
               (allDF["unit_income"] == "PPS:Purchasing power standard (PPS)") &
               (allDF["indic_il"] == "MED_E:Median equivalised net income")]
-factors = ["MvsNM", "gdp_norm", "income"]
+factors = ["gdp_norm", "income"]
+factors_plot = ["gdp_norm", "income", "unemp_norm_F:unemp_norm_M"]
 interactions = ["unemp_norm_F", "unemp_norm_M"]
 # correlation of factors
 sns.heatmap(regDF[["nCrimes_norm", "gdp_norm", "income", "unemp_norm_F", "unemp_norm_M"]].corr(method="spearman"),
@@ -164,37 +167,139 @@ plt.tight_layout()
 plt.savefig("plots/correlation_factors.png")
 plt.show()
 
-# allDF = allDF[allDF["iccs_c"].isin(crimes)]
+for crime in regDF["iccs_name"].unique():
+    sns.heatmap(regDF[regDF["iccs_name"] == crime][["nCrimes_norm",
+                                                    "gdp_norm", "income", "unemp_norm_F", "unemp_norm_M"]].corr(),
+                vmin=-1, vmax=1, cmap="seismic")
+    plt.suptitle(crime)
+    plt.tight_layout()
+    plt.savefig(f"plots/correlation_{crime}.png")
+    plt.show()
+
+# 2do: predict 2020 data (with others excluded)
 for crime, data in regDF.groupby(by="iccs_code"):
-    print(f"regression for crime {crime} ({data['iccs_name'].unique()[0]})")
-    model = smf.mixedlm(f"nCrimes_norm ~ {' + '.join(factors)} + {':'.join(interactions)}",
-                        data=data, groups=data["country"])
+    if crime == "ICCS05012":
+        print(crime)
+    data_M = data[data["MvsNM"] == "M"]
+    data_NM = data[data["MvsNM"] == "NM"]
+    train, test = train_test_split(data, test_size=0.2)
+    train_M, test_M = train_test_split(data_M, test_size=0.2)
+    train_NM, test_NM = train_test_split(data_NM, test_size=0.2)
+    np.random.seed(42)
+    model = smf.mixedlm(f"nCrimes_norm ~ MvsNM + {' + '.join(factors)} + {':'.join(interactions)}",
+                        data=train, groups=train["country"])
+    np.random.seed(42)
+    model_M = smf.mixedlm(f"nCrimes_norm ~ {' + '.join(factors)} + {':'.join(interactions)}",
+                          data=train_M, groups=train_M["country"])
+    np.random.seed(42)
+    model_NM = smf.mixedlm(f"nCrimes_norm ~ {' + '.join(factors)} + {':'.join(interactions)}",
+                           data=train_NM, groups=train_NM["country"])
     # model = smf.mixedlm(f"nCrimes_norm ~ TIME_PERIOD + {' + '.join(factors)} + {':'.join(interactions)}",
     #                     data=data, groups=data["country"], re_formula="~ TIME_PERIOD")
-    result = model.fit()
-    # df["crimes_pred"] = result.predict()
-    print(result.summary())
-    with open(f"data/Model-{'-'.join(data['iccs_name'].unique()[0].split(' '))}.txt", 'w') as f:
-        # Write the summary to the file
-        f.write(result.summary().as_text())
-    result.params.to_csv(f"data/Params-{'-'.join(data['iccs_name'].unique()[0].split(' '))}.txt", sep="\t")
 
-    sns.boxplot(data, hue="MvsNM", y="nCrimes_norm", x="TIME_PERIOD")
+    result = model.fit()
+    y_test = test["nCrimes_norm"]
+    y_pred = result.predict(test)
+    resid = y_test - y_pred
+
+    result_M = model_M.fit()
+    y_test_M = test_M["nCrimes_norm"]
+    y_pred_M = result_M.predict(test_M)
+    resid_M = y_test_M - y_pred_M
+
+    result_NM = model_NM.fit()
+    y_test_NM = test_NM["nCrimes_norm"]
+    y_pred_NM = result_NM.predict(test_NM)
+    resid_NM = y_test_NM - y_pred_NM
+    if not np.isnan(result.aic) or not np.isnan(result_M.aic) or not np.isnan(result_NM.aic):
+        print(f"\n\n\n\n{result.aic}")
+        print(f"{result_M.aic}")
+        print(f"{result_NM.aic}\n\n\n\n")
+
+    print(f"\tregression for crime {crime} ({data['iccs_name'].unique()[0]})")
+    print(result.summary())
+    sns.histplot(result.resid)
+    plt.suptitle(data['iccs_name'].unique()[0])
+    plt.tight_layout()
+    plt.savefig(f"plots/{data['iccs_name'].unique()[0]}_MvsNM_residuals.png")
+    plt.show()
+    print(f"[M]\tregression for crime {crime} ({data_M['iccs_name'].unique()[0]})")
+    print(result_M.summary())
+    sns.histplot(result_M.resid)
+    plt.suptitle(data_M['iccs_name'].unique()[0])
+    plt.tight_layout()
+    plt.savefig(f"plots/{data_M['iccs_name'].unique()[0]}_M_MvsNM_residuals.png")
+    plt.show()
+    print(f"[NM]\tregression for crime {crime} ({data_NM['iccs_name'].unique()[0]})")
+    print(result_NM.summary())
+    sns.histplot(result_NM.resid)
+    plt.suptitle(data_NM['iccs_name'].unique()[0])
+    plt.tight_layout()
+    plt.savefig(f"plots/{data_NM['iccs_name'].unique()[0]}_NM_MvsNM_residuals.png")
+    plt.show()
+    with open(f"data/Model-{'-'.join(data['iccs_name'].unique()[0].split(' '))}.txt", 'w') as f:
+        f.write(result.summary().as_text())
+    with open(f"data/Model_M-{'-'.join(data_M['iccs_name'].unique()[0].split(' '))}.txt", 'w') as f:
+        f.write(result_M.summary().as_text())
+    with open(f"data/Model_NM-{'-'.join(data_NM['iccs_name'].unique()[0].split(' '))}.txt", 'w') as f:
+        f.write(result_NM.summary().as_text())
+    result.params.to_csv(f"data/Params-{'-'.join(data['iccs_name'].unique()[0].split(' '))}.txt", sep="\t")
+    result_M.params.to_csv(f"data/Params_M-{'-'.join(data_M['iccs_name'].unique()[0].split(' '))}.txt", sep="\t")
+    result_NM.params.to_csv(f"data/Params_NM-{'-'.join(data_NM['iccs_name'].unique()[0].split(' '))}.txt", sep="\t")
+
+    # scatterplots
+    for factor in factors_plot:
+        if factor == "unemp_norm_F:unemp_norm_M":
+            sns.scatterplot(data, x="unemp_norm_M", y="nCrimes_norm", hue="MvsNM", hue_order=["M", "NM"])
+            sns.scatterplot(data, x="unemp_norm_F", y="nCrimes_norm", hue="MvsNM", hue_order=["M", "NM"])
+
+            x = np.linspace(start=data[["unemp_norm_F", "unemp_norm_M"]].min().min() * 0.9,
+                            stop=data[["unemp_norm_F", "unemp_norm_M"]].max().max() * 1.1)
+            y_NM = result_NM.params[factor] * x + result_NM.params["Intercept"]
+            y_M = result_M.params[factor] * x + result_M.params["Intercept"]
+        else:
+            sns.scatterplot(data, x=factor, y="nCrimes_norm", hue="MvsNM", hue_order=["M", "NM"])
+
+        # x_M = np.linspace(start=data_M[factor].min() * 0.9, stop=data_M[factor].max() * 1.1)
+        # x_NM = np.linspace(start=data_NM[factor].min() * 0.9, stop=data_NM[factor].max() * 1.1)
+            x = np.linspace(start=data[factor].min() * 0.9, stop=data[factor].max() * 1.1)
+            y_NM = result_NM.params[factor] * x + result_NM.params["Intercept"]
+            y_M = result_M.params[factor] * x + result_M.params["Intercept"]
+
+        plt.plot(x, y_M, label='Metro', color="tab:blue")
+        plt.plot(x, y_NM, label='Non-Metro', color="tab:orange")
+        y0 = plt.ylim()[0]
+        plt.ylim([y0, data["nCrimes_norm"].max()*1.1])
+        # plt.fill_between(x, y.mean() - y.std(), y.mean() + y.std(), color='red', alpha=0.3,
+        #                  label='Standard Deviation')
+        plt.ylabel(data['iccs_name'].unique()[0])
+        if factor == "unemp_norm_F:unemp_norm_M":
+            plt.xlabel("unemp_norm")
+            factor_name = "unemp_norm"
+        else:
+            factor_name = factor
+        plt.tight_layout()
+        plt.savefig(f"plots/{data['iccs_name'].unique()[0]}_MvsNM_{factor_name}.png")
+        plt.show()
+
+    # boxplots
+    sns.boxplot(data, hue="MvsNM", hue_order=["M", "NM"], y="nCrimes_norm", x="TIME_PERIOD")
     plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
     plt.savefig(f"plots/Timeline_nCrimes_MvsNM_{data['iccs_name'].unique()[0]}.png")
     plt.show()
 
-    sns.scatterplot(data, x="unemp_norm_F", y="nCrimes_norm", hue="MvsNM")
-    plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
-    plt.savefig(f"plots/nCrimes_unemp_F_MvsNM_{data['iccs_name'].unique()[0]}.png")
-    plt.show()
-    sns.scatterplot(data, x="unemp_norm_M", y="nCrimes_norm", hue="MvsNM")
-    plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
-    plt.savefig(f"plots/nCrimes_unemp_M_MvsNM_{data['iccs_name'].unique()[0]}.png")
-    plt.show()
+    # sns.scatterplot(data, x="unemp_norm_F", y="nCrimes_norm", hue="MvsNM")
+    # plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
+    # plt.savefig(f"plots/nCrimes_unemp_F_MvsNM_{data['iccs_name'].unique()[0]}.png")
+    # plt.show()
+    # sns.scatterplot(data, x="unemp_norm_M", y="nCrimes_norm", hue="MvsNM")
+    # plt.suptitle(f"{data['iccs_name'].unique()[0]} ({crime})")
+    # plt.savefig(f"plots/nCrimes_unemp_M_MvsNM_{data['iccs_name'].unique()[0]}.png")
+    # plt.show()
     # sma.graphics.influence_plot(model, criterion="cooks")
 
-print('.')
+print("in the end: compare w/o country as random effect to see if it changes model quality")
+exit()
 # with open("code/config.json", 'r') as f:
 #     cfg = json.load(f)
 #

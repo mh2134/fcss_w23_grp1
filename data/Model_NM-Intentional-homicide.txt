@@ -1,0 +1,17 @@
+               Mixed Linear Model Regression Results
+====================================================================
+Model:                MixedLM    Dependent Variable:    nCrimes_norm
+No. Observations:     68         Method:                REML        
+No. Groups:           16         Scale:                 0.0000      
+Min. group size:      1          Log-Likelihood:        193.3514    
+Max. group size:      7          Converged:             Yes         
+Mean group size:      4.2                                           
+--------------------------------------------------------------------
+                          Coef.  Std.Err.   z    P>|z| [0.025 0.975]
+--------------------------------------------------------------------
+Intercept                  0.043    0.009  4.666 0.000  0.025  0.062
+gdp_norm                   0.000    0.000  0.655 0.512 -0.000  0.000
+income                    -0.000    0.000 -3.641 0.000 -0.000 -0.000
+unemp_norm_F:unemp_norm_M -0.000    0.000 -0.280 0.779 -0.000  0.000
+Group Var                  0.000    0.037                           
+====================================================================
