@@ -48,15 +48,23 @@ crimeDF = crimeDF[crimeDF["OBS_VALUE"].notna()]
 gdpDF = pd.read_csv("raw_data/GDP_metro_10r_3gdp_linear.csv")
 gdpDF = gdpDF[gdpDF["OBS_VALUE"].notna()]
 
-def get_metro_region(strin):
-    if re.match(r"\w{2}_NM", strin.split(':')[0]):
-        return "NM";  # Non-Metropole
-    elif re.match(r"^\w{2}$", strin.split(':')[0]):
-        return "WC";  # Whole Country
-    elif re.match(r"\w{2}\d{3}(M|MC)$", strin.split(':')[0]):
-        return "M";  # Metropole
+def get_metro_region(strin, from_country=False):
+    if not from_country:
+        if re.match(r"\w{2}_NM", strin.split(':')[0]):
+            return "NM";  # Non-Metropole
+        elif re.match(r"^\w{2}$", strin.split(':')[0]):
+            return "WC";  # Whole Country
+        elif re.match(r"\w{2}\d{3}(M|MC)$", strin.split(':')[0]):
+            return "M";  # Metropole
+        else:
+            raise ValueError(f"not pattern match for {strin.split(':')[0]}")
     else:
-        raise ValueError(f"not pattern match for {strin.split(':')[0]}")
+        if re.match("DEG1:Cities", strin):
+            return "M";
+        elif re.match("DEG2:Towns and suburbs", strin) or re.match("DEG3:Rural areas", strin):
+            return "NM";
+        else:
+            raise ValueError(f"not pattern match for {strin}")
 
 for df in [unempDF]:
     del df["DATAFLOW"], df["LAST UPDATE"], df["OBS_FLAG"]
@@ -112,8 +120,9 @@ for df in [femalesUnempDF, malesUnempDF]:
 # a = pd.merge(left=unempDFf, right=unempDFm, on=["metroreg", "TIME_PERIOD", "unit", "freq"])
 unempDF = pd.merge(left=femalesUnempDF, right=malesUnempDF, on=["metroreg", "TIME_PERIOD"],
                    suffixes=["_F", "_M"])
-
 allDF = pd.merge(left=allDF, right=unempDF, on=["metroreg", "TIME_PERIOD"])
+
+# now, create some helper variables to make values more accessible
 allDF["MvsNM"] = allDF["metroreg"].apply(lambda x: get_metro_region(x));
 # 2do: make this more bulletproof
 allDF["country"] = allDF["metroreg"].apply(lambda x: x.split(':')[0][0:2])
@@ -122,14 +131,35 @@ allDF["iccs_name"] = allDF["iccs"].apply(lambda x: ' '.join(x.split(':')[1:]))
 allDF.loc[allDF.index, "unit_gdp_code"] = allDF["unit_gdp"].apply(lambda x: x.split(':')[0])
 allDF.loc[allDF.index, "unit_gdp_name"] = allDF["unit_gdp"].apply(lambda x: ' '.join(x.split(':')[1:]))
 del allDF["unit_gdp"]
+
+incomeDF = pd.read_csv("raw_data/Income_urbanisation_ilc_di17_linear.csv");
+incomeDF = incomeDF[(incomeDF["age"] == "TOTAL:Total") &
+                    incomeDF["unit"].isin(["EUR:Euro", "PPS:Purchasing power standard (PPS)"]) &
+                    (incomeDF["sex"] == "T:Total")]
+incomeDF["unit_income"] = incomeDF["unit"]
+incomeDF["income"] = incomeDF["OBS_VALUE"]
+incomeDF["MvsNM"] = incomeDF["deg_urb"].apply(lambda x: get_metro_region(x, from_country=True))
+incomeDF["country"] = incomeDF["geo"].apply(lambda x: x.split(':')[0])
+del incomeDF["geo"], incomeDF["OBS_VALUE"], incomeDF["DATAFLOW"], incomeDF["LAST UPDATE"], incomeDF["OBS_FLAG"], \
+    incomeDF["freq"], incomeDF["age"], \
+    incomeDF["sex"], incomeDF["unit"], incomeDF["deg_urb"]
+
+cols = list(incomeDF.columns)
+cols.remove("income")
+# merge values of non-metropole regions together (NM)
+incomeDF = incomeDF.groupby(cols).mean().reset_index()
+allDF = pd.merge(left=allDF, right=incomeDF, on=['TIME_PERIOD', 'MvsNM', 'country'])
+
 allDF.to_csv("data/table4regression.csv")
 
-regDF = allDF[(allDF["MvsNM"] != "WC") & (allDF["unit_gdp_code"] == "PPS_EU27_2020_HAB")]
-factors = ["MvsNM", "gdp_norm"]
+regDF = allDF[(allDF["MvsNM"] != "WC") & (allDF["unit_gdp_code"] == "PPS_EU27_2020_HAB") &
+              (allDF["unit_income"] == "PPS:Purchasing power standard (PPS)") &
+              (allDF["indic_il"] == "MED_E:Median equivalised net income")]
+factors = ["MvsNM", "gdp_norm", "income"]
 interactions = ["unemp_norm_F", "unemp_norm_M"]
 # correlation of factors
-sns.heatmap(regDF[["nCrimes_norm", "gdp_norm", "unemp_norm_F", "unemp_norm_M"]].corr(), cmap="seismic",
-            vmin=-1, vmax=1)
+sns.heatmap(regDF[["nCrimes_norm", "gdp_norm", "income", "unemp_norm_F", "unemp_norm_M"]].corr(method="spearman"),
+            cmap="seismic", vmin=-1, vmax=1)
 plt.tight_layout()
 plt.savefig("plots/correlation_factors.png")
 plt.show()
