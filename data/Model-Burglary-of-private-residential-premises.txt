@@ -1,17 +1,18 @@
-               Mixed Linear Model Regression Results
-====================================================================
-Model:                MixedLM    Dependent Variable:    nCrimes_norm
-No. Observations:     824        Method:                REML        
-No. Groups:           22         Scale:                 0.0000      
-Min. group size:      3          Log-Likelihood:        4411.0912   
-Max. group size:      168        Converged:             Yes         
-Mean group size:      37.5                                          
---------------------------------------------------------------------
-                          Coef.  Std.Err.   z    P>|z| [0.025 0.975]
---------------------------------------------------------------------
-Intercept                  0.002    0.000  5.707 0.000  0.001  0.003
-MvsNM[T.NM]               -0.000    0.000 -3.358 0.001 -0.001 -0.000
-gdp_norm                   0.000    0.000  1.593 0.111 -0.000  0.000
-unemp_norm_F:unemp_norm_M  0.000    0.011  0.002 0.999 -0.021  0.021
-Group Var                  0.000    0.001                           
-====================================================================
+                Mixed Linear Model Regression Results
+=====================================================================
+Model:                 MixedLM    Dependent Variable:    nCrimes_norm
+No. Observations:      824        Method:                REML        
+No. Groups:            22         Scale:                 0.0000      
+Min. group size:       3          Log-Likelihood:        4450.5492   
+Max. group size:       168        Converged:             Yes         
+Mean group size:       37.5                                          
+---------------------------------------------------------------------
+                          Coef.  Std.Err.    z    P>|z| [0.025 0.975]
+---------------------------------------------------------------------
+Intercept                  0.009    0.001   9.126 0.000  0.007  0.011
+MvsNM[T.NM]               -0.001    0.000  -7.296 0.000 -0.001 -0.001
+gdp_norm                   0.000    0.000   3.015 0.003  0.000  0.000
+income                    -0.000    0.000 -11.128 0.000 -0.000 -0.000
+unemp_norm_F:unemp_norm_M -0.029    0.010  -2.826 0.005 -0.048 -0.009
+Group Var                  0.000    0.004                            
+=====================================================================

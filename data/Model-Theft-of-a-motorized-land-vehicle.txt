@@ -3,15 +3,16 @@
 Model:                MixedLM    Dependent Variable:    nCrimes_norm
 No. Observations:     896        Method:                REML        
 No. Groups:           23         Scale:                 0.0000      
-Min. group size:      3          Log-Likelihood:        4878.3357   
+Min. group size:      3          Log-Likelihood:        4862.6349   
 Max. group size:      145        Converged:             Yes         
 Mean group size:      39.0                                          
 --------------------------------------------------------------------
                           Coef.  Std.Err.   z    P>|z| [0.025 0.975]
 --------------------------------------------------------------------
-Intercept                  0.001    0.000  3.912 0.000  0.000  0.001
-MvsNM[T.NM]               -0.001    0.000 -4.235 0.000 -0.001 -0.000
-gdp_norm                   0.000    0.000  4.767 0.000  0.000  0.000
-unemp_norm_F:unemp_norm_M  0.076    0.011  7.023 0.000  0.055  0.097
+Intercept                  0.001    0.000  2.565 0.010  0.000  0.002
+MvsNM[T.NM]               -0.001    0.000 -4.451 0.000 -0.001 -0.000
+gdp_norm                   0.000    0.000  4.898 0.000  0.000  0.000
+income                    -0.000    0.000 -1.333 0.182 -0.000  0.000
+unemp_norm_F:unemp_norm_M  0.073    0.011  6.583 0.000  0.051  0.095
 Group Var                  0.000    0.000                           
 ====================================================================
