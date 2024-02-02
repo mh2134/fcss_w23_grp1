@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 import statsmodels.formula.api as smf
 import statsmodels.api as sma
 from statsmodels.formula.api import ols
+from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
@@ -30,16 +31,66 @@ def get_metro_region2(strin):
     else:
         raise ValueError(f"not pattern match for {strin.split(':')[0]}")
 
-df = pd.read_csv("data/df_allmetro.csv")
-crimes = list(df["iccs"].unique())
-df["MvsNM"] = df["metroreg"].apply(lambda x: get_metro_region2(x));
 
-if not os.path.exists("plots"):
-    os.makedirs("plots")
+# df = pd.read_csv("data/df_allmetro.csv")
+# crimes = list(df["iccs"].unique())
+# df["MvsNM"] = df["metroreg"].apply(lambda x: get_metro_region2(x));
+#
+# if not os.path.exists("plots"):
+#     os.makedirs("plots")
 
+df = pd.read_csv("data/normalized_data.csv")
+df["crimes"] = df['crime/population']
+df["unemployment"] = df['unemp per Tsd.']
+df = df[~df["unemployment"].isna()]
+factors = ["gdp", "unemployment", "density"]
+factors_plot = ["gdp", "density", "unemployment"]
+# interactions = ["unemp_norm_F", "unemp_norm_M"]
+countries = []
+for country, data in df.groupby(by="country"):
+    if len(data["TIME_PERIOD"].unique()) <= 6:
+        countries.append(country)
+print(countries)
+df = df[~df["country"].isin(countries)]
+    # break
+train, test = train_test_split(df, test_size=0.2, random_state=42)
+# correlation of factors
 
+for crime, data in train.groupby(by="iccs"):
+    # data.loc[:, "density"] = data["density"] / 1000000
+    model2 = smf.mixedlm(f"crimes ~ {' + '.join(factors)}",
+                         data=data, groups=data["country"])
 
+    result2 = model2.fit()
 
+    x_den = np.linspace(start=data["density"].min() * 0.9, stop=data["density"].max() * 1.1)
+    y = result2.resid.abs()
+    x_unemp = np.linspace(start=data["unemployment"].min() * 0.9, stop=data["unemployment"].max() * 1.1)
+    x_gdp = np.linspace(start=data["gdp"].min() * 0.9, stop=data["gdp"].max() * 1.1)
+    y = result2.params["Intercept"] + result2.params["density"] * x_den + result2.params["gdp"] * x_gdp + \
+        result2.params["unemployment"] * x_unemp
+    x = np.linspace(start=data["unemployment"].min() * 0.9, stop=data["density"].max() * 1.1)
+    sns.scatterplot(data, x="density", y="crimes", color="tab:blue")
+    sns.scatterplot(data, x="gdp", y="crimes", color="tab:orange")
+    sns.scatterplot(data, x="unemployment", y="crimes", color="tab:green")
+    plt.plot(x_unemp, y)
+    plt.plot(x, y)
+    plt.show()
+    break
+    # crimes_pred = result2.predict(test[test["iccs"] == crime])
+    result2.summary()
+
+    # model = LinearRegression()
+    # result = model.fit(np.array(data["crimes"]).reshape(-1, 1), np.array(data[["density", "gdp", "unemployment"]]))
+    # sns.scatterplot(data, x="density", y="crimes", color="tab:blue")
+    # sns.scatterplot(data, x="gdp", y="crimes", color="tab:orange")
+    # sns.scatterplot(data, x="unemployment", y="crimes", color="tab:green")
+    # y = result.intercept_[0] + result.coef_[0][0]*x_den + result.coef_[1][0]*x_gdp + result.coef_[2][0]*x_unemp
+    # x = np.linspace(start=data["unemployment"].min() * 0.9, stop=data["density"].max() * 1.1)
+    # # x = np.linspace(start=data["unemployment"].min() * 0.9, stop=data["unemployment"].max() * 1.1)
+    # plt.plot(x, y)
+    # plt.show()
+#
 popDF = pd.read_csv("raw_data/Population_met_pjangrp3_linear.csv")
 unempDF = pd.read_csv("raw_data/Unemployment_met_lfu3pers_linear.csv")
 unempDF = unempDF[unempDF["OBS_VALUE"].notna()]
@@ -149,9 +200,9 @@ cols.remove("income")
 # merge values of non-metropole regions together (NM)
 incomeDF = incomeDF.groupby(cols).mean().reset_index()
 allDF = pd.merge(left=allDF, right=incomeDF, on=['TIME_PERIOD', 'MvsNM', 'country'])
-for col in ["nCrimes_norm", "unemp_norm_M", "unemp_norm_F"]:
-    allDF.loc[allDF.index, col] = allDF[col] * 1000  # value per 1000 people
-
+for col in ["unemp_norm_M", "unemp_norm_F"]:
+    allDF.loc[allDF.index, col] = allDF[col] * 1000
+allDF.loc[allDF.index, "nCrimes_norm"] = allDF["nCrimes_norm"] * 1000000
 allDF.to_csv("data/table4regression.csv")
 
 regDF = allDF[(allDF["MvsNM"] != "WC") & (allDF["unit_gdp_code"] == "PPS_EU27_2020_HAB") &
