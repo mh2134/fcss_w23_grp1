@@ -8,6 +8,8 @@ import pymer4.stats as pymers
 import numpy as np
 
 # axis limits for the final plots
+from fcss_w23_grp1.code.utils import throw_outliers
+
 axlims = {
     "ICCS0401": {  # robbery
         "unemployment": {
@@ -87,46 +89,30 @@ predictors = ["gdp", "unemployment", "density"]
 # rescale urban density
 df.loc[:, "density"] = df["density"] / 10
 
-# define unique colour palette with persistent colour for each country
+# define unique colour palette for each country with persistent colour across plots
 palette = sns.color_palette(cc.glasbey_bw_minc_20, n_colors=len(df.country.unique()))
 color_dict = {}
 for index, country in enumerate(df.country.unique()):
     color_dict.update({country: palette[index]})
 plt.rcParams['axes.prop_cycle'] = plt.cycler(color=[color_dict[c] for c in df.country.unique()])
 
-# homicide: "ICCS0101" | robbery: "ICCS0401" | theft: "ICCS050211" | burglary: "ICCS05012"
 # make a separate model for each crime type
+# homicide: "ICCS0101" | robbery: "ICCS0401" | theft: "ICCS050211" | burglary: "ICCS05012"
 for crime, data in df.groupby(by="iccs"):
     crime_name = data["iccs_d"].unique()[0]
     # log results, model outputs etc.
     log = open(f"data/{crime}_{crime_name}.log", 'w')
     log.write(f"{crime_name}\n")
-    if crime != "ICCS0401":
-        continue;
-    # if crime != "ICCS0101":
-    #     continue
-    # throw outliers
-    print(crime_name)
-    print(len(data))
-    tmp = data.copy(deep=True)
-    for var in ["crimes", "gdp", "density", "unemployment"]:
-        len_before = len(data)
-        data = data[data[var] <= (tmp[var].median() + 3 * tmp[var].std())]
-        # print(f"Threw {len_before-len(data)} rows with outliers in '{var}'\n")
-        log.write(f"Threw {len_before-len(data)} rows with outliers in '{var}'\n")
-    del tmp
-    # throw countries that have too few data points (now)
-    countries = []
-    for country, rows in data.groupby(by="country"):
-        if len(rows["year"].unique()) <= 3:
-            countries.append(country)
-    log.write(f"throwing countries {countries} with too few datapoints (<=3)\n")
-    data = data[~data["country"].isin(countries)]
-    data.to_csv(f"data/{crime}_{crime_name.split(' ')[0]}_dataframe.csv")
+
+    # throw outliers for the data corresponding to this crime type
+    data, loginfo = throw_outliers(data, crime_name)
+    log.writelines(loginfo)
+
+    # save dataframe
+    data.to_csv(f"data/{crime}_{crime_name.split(' ')[0]}_RegressionDataframe.csv")
     # print(crime_name)
-    print(len(data))
-    # continue;
-    # boxplots
+
+    # plot the number of crimes
     # plot number of crimes in total
     plt.figure(figsize=(5, 1))
     sns.boxplot(data, x="crimes", color="gray")
@@ -146,27 +132,24 @@ for crime, data in df.groupby(by="iccs"):
     plt.savefig(f"plots/{crime}_{crime_name.split(' ')[0]}_Boxplots_Country.svg", transparent=True)
     plt.show()
 
-    log.write(f"----------- {crime_name} -----------\n")
-    # overview on the data
-    # print_min_max(data)
+    log.write(f"----------- regression for {crime_name} -----------\n")
 
-    # model
+    # equation and model
     equation = "crimes ~ (1|country) + " \
                "unemployment + (unemployment|country) + " \
                "density + (density|country) + " \
-               "gdp + (gdp|country)"  # + (gdp:density) + (gdp*unemployment)"
+               "gdp + (gdp|country)"
     model = Lmer(equation, data=data)
-    result = model.fit() # print(model.coefs) # print(model.fixef.head(5))
-    # print(model.summary())
+    result = model.fit()
+
     log.write(f"{equation}\n")
     log.writelines(model.summary())
-    model.summary().to_csv(f"data/{crime}_{crime_name.split(' ')[0]}_LMER.csv")
-    # model.plot_summary()
-    # plt.show()
 
-    # R^2
+    # save model summary to table
+    model.summary().to_csv(f"data/{crime}_{crime_name.split(' ')[0]}_LMER.csv")
+
+    # save R^2 to table
     R_squared = pymers.rsquared(model.data.crimes, model.residuals)
-    # print(f"R2c:\t\t{R_squared} ({crime_name})\n")
     with open(f"data/{crime}_{crime_name.split(' ')[0]}_LMER.csv", 'a') as fd:
         fd.write(f"\nR2c:,{R_squared}\n")
     log.write(f"\nR2c:,{R_squared}\n")
