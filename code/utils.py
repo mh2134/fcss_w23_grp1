@@ -1,5 +1,5 @@
 """
-Functions.
+Functions for the regression script.
 """
 import matplotlib.pyplot as plt
 import seaborn as sns
