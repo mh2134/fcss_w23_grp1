@@ -74,14 +74,17 @@ crime_labels = {
 df = pd.read_csv("data/normalized_data.csv")
 # rename colums
 df.rename(columns={"TIME_PERIOD": "year", "crime/population": "crimes", "unemp per Tsd.": "unemployment"}, inplace=True)
-df.loc[:, "year"] = df["TIME_PERIOD"]
-del df["TIME_PERIOD"]
-df["crimes"] = df['crime/population']
-df["unemployment"] = df['unemp per Tsd.']
+# df.loc[:, "year"] = df["TIME_PERIOD"]
+# del df["TIME_PERIOD"]
+# df["crimes"] = df['crime/population']
+# df["unemployment"] = df['unemp per Tsd.']
+# throw NaN values in unemployment
 df = df[~df["unemployment"].isna()]
-factors = ["gdp", "unemployment", "density"]
 
-# rescale density
+# define the predictor variables
+predictors = ["gdp", "unemployment", "density"]
+
+# rescale urban density
 df.loc[:, "density"] = df["density"] / 10
 
 # define unique colour palette with persistent colour for each country
@@ -201,7 +204,7 @@ for crime, data in df.groupby(by="iccs"):
         nrows = len(data["country"].unique()) // ncols + (len(data["country"].unique()) % ncols > 0)
         for idx, country in enumerate(data["country"].unique()):
             subset = model.data[model.data["country"] == country]
-            var1, var2 = list(set(factors) - set([var]))
+            var1, var2 = list(set(predictors) - set([var]))
             x1 = subset[var1]
             x2 = subset[var2]
             y = model.fixef.loc[country, var1] * 0 + x1.mean() \
@@ -227,7 +230,7 @@ for crime, data in df.groupby(by="iccs"):
         x = np.linspace(start=data[var].min() * 0.99, stop=data[var].max())
         for country in data["country"].unique():
             subset = model.data[model.data["country"] == country]
-            var1, var2 = list(set(factors) - set([var]))
+            var1, var2 = list(set(predictors) - set([var]))
             x1 = subset[var1]
             x2 = subset[var2]
             y = model.fixef.loc[country, var1] * 0 + x1.mean() \
