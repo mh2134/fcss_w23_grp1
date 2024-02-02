@@ -1,0 +1,178 @@
+Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
+Formula: crimes ~ (1 | country) + gdp + (gdp | country) + unemployment +  
+    (unemployment | country) + density + (density | country)
+   Data: data
+
+REML criterion at convergence: 20314
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.5607 -0.5460 -0.0810  0.4483  5.2424 
+
+Random effects:
+ Groups    Name         Variance  Std.Dev. Corr 
+ country   (Intercept)  1.686e+04 129.8396      
+ country.1 (Intercept)  7.357e+04 271.2427      
+           gdp          8.774e+00   2.9622 -1.00
+ country.2 (Intercept)  4.281e+04 206.9093      
+           unemployment 5.956e-01   0.7717 1.00 
+ country.3 (Intercept)  4.121e+04 203.0067      
+           density      4.686e+01   6.8454 1.00 
+ Residual               3.480e+04 186.5573      
+Number of obs: 1514, groups:  country, 22
+
+Fixed effects:
+             Estimate Std. Error       df t value Pr(>|t|)   
+(Intercept)  178.0131    97.1050  10.9308   1.833  0.09412 . 
+gdp            0.5480     0.7892  15.6721   0.694  0.49765   
+unemployment   0.3825     0.2516  16.8729   1.520  0.14704   
+density        7.3125     1.7331  10.5069   4.219  0.00159 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) gdp    unmply
+gdp         -0.695              
+unemploymnt  0.227  0.090       
+density      0.444 -0.169 -0.107
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')
+
+           R2m       R2c
+[1,] 0.1431119 0.9122941
+[1] 0.7691822
+$country
+    (Intercept) (Intercept)        gdp (Intercept) unemployment (Intercept)    density
+AT -162.7472549    29.62882 -0.3235692  -230.21542  -0.85865407  211.565708  7.1355660
+BE   26.4742629   654.41903 -7.1467520    41.63364   0.15528454  154.558230  5.2117777
+BG    0.4264690  -165.98803  1.8127152   -76.73075  -0.28618922   69.231760  2.3346125
+CY  -24.8141190    10.02279 -0.1094565   -68.33880  -0.25488905  -80.722442 -2.7219184
+CZ  -13.4310626   130.98737 -1.4304814   -54.59243  -0.20361805  -70.654259 -2.3824857
+DE   11.9549310   287.56287 -3.1404046   353.11200   1.31703192 -136.462799 -4.6018518
+DK   18.9957496   129.55965 -1.4148896   -14.63539  -0.05458685  -53.218922 -1.7947751
+EL    0.8920377   -13.36177  0.1459207   -34.01402  -0.12686500    4.543948  0.1532233
+ES   17.0489585    46.85083 -0.5116466   291.09917   1.08573740  -25.537218 -0.8612854
+FI   -7.4689643  -115.28732  1.2590249   -42.14672  -0.15719822   49.013266  1.6528679
+HU  -10.6598591   127.09427 -1.3879658   -65.18094  -0.24311091 -142.385667 -4.8014143
+IE  -63.1138636  -323.37767  3.5315293  -144.08162  -0.53739350   56.057867  1.8908349
+IT   75.3711763    60.84150 -0.6644353   166.23171   0.62000860 -120.064111 -4.0493276
+LT   -2.2389217   -43.83884  0.4787534   -45.40423  -0.16934801  154.919379  5.2241682
+LV    1.1211187   -90.17420  0.9847706   -18.13399  -0.06763589   32.376780  1.0917932
+MT  -41.0690485   -95.08655  1.0384173  -103.07677  -0.38445420 -118.709511 -4.0027886
+NL  -13.4901327  -324.10970  3.5395237   160.58062   0.59893124 -191.848633 -6.4693709
+PT   62.2304325  -274.37824  2.9964184   101.05015   0.37689536   68.279477  2.3020437
+RO   74.5001376  -157.86344  1.7239884   109.91463   0.40995795 -196.218868 -6.6173924
+SE   90.1217718   165.17924 -1.8038826  -152.44818  -0.56859897  478.736836 16.1431758
+SI  -29.3359021  -127.30908  1.3903117   -81.32357  -0.30331945  -52.513311 -1.7706239
+SK  -10.7679171    88.62847 -0.9678901   -93.29911  -0.34798564  -90.947510 -3.0668292
+
+with conditional variances for “country” 
+$country
+   (Intercept)         gdp unemployment    density
+AT  -472.97593  0.22439433  -0.47619446 14.4480246
+BE   283.91014 -6.59878850   0.53774415 12.5242363
+BG   179.71896  2.36067869   0.09627040  9.6470712
+CY    78.75661  0.43850705   0.12757056  4.5905403
+CZ   124.28884 -0.88251787   0.17884156  4.9299730
+DE   225.83281 -2.59244104   1.69949154  2.7106068
+DK   253.99609 -0.86692610   0.32787276  5.5176836
+EL   181.58124  0.69388422   0.25559461  7.4656819
+ES   246.20892  0.03631694   1.46819701  6.4511733
+FI   148.13723  1.80698842   0.22526140  8.9653266
+HU   135.37365 -0.84000230   0.13934871  2.5110443
+IE   -74.44237  4.07949285  -0.15493388  9.2032936
+IT   479.49779 -0.11647182   1.00246822  3.2631311
+LT   169.05740  1.02671694   0.21311160 12.5366269
+LV   182.49756  1.53273413   0.31482372  8.4042519
+MT    13.73689  1.58638078  -0.00199459  3.3096700
+NL   124.05256  4.08748718   0.98139085  0.8430877
+PT   426.93482  3.54438192   0.75935497  9.6145024
+RO   476.01364  2.27195196   0.79241757  0.6950663
+SE   538.50017 -1.25591904  -0.18613935 23.4556345
+SI    60.66948  1.93827519   0.07914016  5.5418348
+SK   134.94142 -0.41992663   0.03447398  4.2456295
+
+attr(,"class")
+[1] "coef.mer"
+[1] "----------------------"
+Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
+Formula: crimes ~ (1 | country) + density + (density | country)
+   Data: data
+
+REML criterion at convergence: 20458.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.8463 -0.5610 -0.0757  0.4376  4.9475 
+
+Random effects:
+ Groups    Name        Variance Std.Dev. Corr
+ country   (Intercept) 31569.41 177.68       
+ country.1 (Intercept)  6731.70  82.05       
+           density        57.91   7.61   0.02
+ Residual              39742.90 199.36       
+Number of obs: 1514, groups:  country, 22
+
+Fixed effects:
+            Estimate Std. Error      df t value Pr(>|t|)    
+(Intercept)  217.137     44.461  20.414   4.884 8.51e-05 ***
+density        8.881      1.853  14.882   4.792 0.000243 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+        (Intr)
+density -0.113
+optimizer (nloptwrap) convergence code: 0 (OK)
+unable to evaluate scaled gradient
+Model failed to converge: degenerate  Hessian with 1 negative eigenvalues
+
+           R2m       R2c
+[1,] 0.2845804 0.8541064
+[1] 0.569526
+
+Call:
+lm(formula = crimes ~ density + gdp + unemployment, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-649.39 -205.68  -67.33  141.02 1400.57 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  245.8005    26.5746   9.249   <2e-16 ***
+density        3.7642     0.2735  13.761   <2e-16 ***
+gdp            0.5849     0.2536   2.307   0.0212 *  
+unemployment   2.2588     0.2095  10.782   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 302 on 1510 degrees of freedom
+Multiple R-squared:  0.2059,	Adjusted R-squared:  0.2043 
+F-statistic: 130.5 on 3 and 1510 DF,  p-value: < 2.2e-16
+
+          R2m      R2c
+[1,] 0.205589 0.205589
+[1] 0
+
+Call:
+lm(formula = crimes ~ density, data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-730.86 -228.24  -78.54  147.50 1303.09 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 359.9959    11.4886   31.34   <2e-16 ***
+density       4.1063     0.2568   15.99   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 313.2 on 1512 degrees of freedom
+Multiple R-squared:  0.1446,	Adjusted R-squared:  0.144 
+F-statistic: 255.6 on 1 and 1512 DF,  p-value: < 2.2e-16
+
+           R2m       R2c
+[1,] 0.1445177 0.1445177
+[1] 0

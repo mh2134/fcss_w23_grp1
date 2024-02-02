@@ -1,0 +1,43 @@
+Linear mixed model fit by REML. t-tests use Satterthwaite's method ['lmerModLmerTest']
+Formula: crimes ~ (1 | country) + gdp + (gdp | country) + unemployment +  
+    (unemployment | country) + density + (density | country)
+   Data: data
+
+REML criterion at convergence: 23921.9
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.8077 -0.3898 -0.0747  0.2583  5.7692 
+
+Random effects:
+ Groups    Name         Variance  Std.Dev. Corr 
+ country   (Intercept)  114775.75 338.786       
+ country.1 (Intercept)  467273.68 683.574       
+           gdp              80.21   8.956  -1.00
+ country.2 (Intercept)   97540.89 312.315       
+           unemployment     11.33   3.366  0.47 
+ country.3 (Intercept)  122137.56 349.482       
+           density          28.39   5.328  1.00 
+ Residual               193614.26 440.016       
+Number of obs: 1582, groups:  country, 21
+
+Fixed effects:
+             Estimate Std. Error       df t value Pr(>|t|)   
+(Intercept)  498.7806   210.8929   5.4629   2.365   0.0600 . 
+gdp           -0.1323     2.1787  12.6533  -0.061   0.9525   
+unemployment   1.4588     0.9179  19.9796   1.589   0.1277   
+density        5.8307     1.6375  12.4752   3.561   0.0037 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) gdp    unmply
+gdp         -0.784              
+unemploymnt  0.080  0.018       
+density      0.338 -0.144 -0.044
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')
+
+            R2m       R2c
+[1,] 0.04061478 0.7975616
+[1] 0.7569468
