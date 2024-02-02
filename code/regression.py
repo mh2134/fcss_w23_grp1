@@ -122,5 +122,4 @@ for crime, data in df.groupby(by="iccs"):
 
     log.close()
 
-    return;
 
