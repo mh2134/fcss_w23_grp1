@@ -1,0 +1,6 @@
+Threw 68 rows with outliers
+throwing countries ['DE', 'EE', 'HR', 'HU', 'PL'] with too few datapoints (<5)
+----------- Robbery -----------
+crimes ~ density + (density|country) + unemployment + (unemployment|country) + gdp + (gdp|country) + (1|country)
+Estimate2.5_ci97.5_ciSEDFT-statP-valSig
+R2c:,0.7266030608885017

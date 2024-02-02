@@ -1,0 +1,10 @@
+Burglary of private residential premises
+Threw 43 rows with outliers in 'crimes'
+Threw 11 rows with outliers in 'gdp'
+Threw 38 rows with outliers in 'density'
+Threw 28 rows with outliers in 'unemployment'
+throwing countries ['HR', 'LV'] with too few datapoints (<=3)
+----------- regression for Burglary of private residential premises -----------
+crimes ~ (1|country) + unemployment + (unemployment|country) + density + (density|country) + gdp + (gdp|country)
+Estimate2.5_ci97.5_ciSEDFT-statP-valSig
+R2c:,0.7586623703330807

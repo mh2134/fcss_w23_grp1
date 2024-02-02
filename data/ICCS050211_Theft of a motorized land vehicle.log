@@ -1,0 +1,10 @@
+Theft of a motorized land vehicle
+Threw 73 rows with outliers in 'crimes'
+Threw 12 rows with outliers in 'gdp'
+Threw 29 rows with outliers in 'density'
+Threw 33 rows with outliers in 'unemployment'
+throwing countries ['EE', 'HR'] with too few datapoints (<=3)
+----------- regression for Theft of a motorized land vehicle -----------
+crimes ~ (1|country) + unemployment + (unemployment|country) + density + (density|country) + gdp + (gdp|country)
+Estimate2.5_ci97.5_ciSEDFT-statP-valSig
+R2c:,0.7012225007777324

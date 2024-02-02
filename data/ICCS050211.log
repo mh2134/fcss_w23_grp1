@@ -1,0 +1,6 @@
+Threw 73 rows with outliers
+throwing countries ['BG', 'DE', 'EE', 'HR'] with too few datapoints (<5)
+----------- Theft of a motorized land vehicle -----------
+crimes ~ density + (density|country) + unemployment + (unemployment|country) + gdp + (gdp|country) + (1|country)
+Estimate2.5_ci97.5_ciSEDFT-statP-valSig
+R2c:,0.7234103017687399

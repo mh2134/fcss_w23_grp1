@@ -1,0 +1,10 @@
+Robbery
+Threw 68 rows with outliers in 'crimes'
+Threw 19 rows with outliers in 'gdp'
+Threw 39 rows with outliers in 'density'
+Threw 23 rows with outliers in 'unemployment'
+throwing countries ['EE', 'HR', 'PL'] with too few datapoints (<=3)
+----------- regression for Robbery -----------
+crimes ~ (1|country) + unemployment + (unemployment|country) + density + (density|country) + gdp + (gdp|country)
+Estimate2.5_ci97.5_ciSEDFT-statP-valSig
+R2c:,0.7042184686237496

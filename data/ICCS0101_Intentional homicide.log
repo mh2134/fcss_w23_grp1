@@ -1,0 +1,10 @@
+Intentional homicide
+Threw 46 rows with outliers in 'crimes'
+Threw 19 rows with outliers in 'gdp'
+Threw 42 rows with outliers in 'density'
+Threw 27 rows with outliers in 'unemployment'
+throwing countries ['CZ', 'EE', 'HR'] with too few datapoints (<=3)
+----------- regression for Intentional homicide -----------
+crimes ~ (1|country) + unemployment + (unemployment|country) + density + (density|country) + gdp + (gdp|country)
+Estimate2.5_ci97.5_ciSEDFT-statP-valSig
+R2c:,0.6519652079966526

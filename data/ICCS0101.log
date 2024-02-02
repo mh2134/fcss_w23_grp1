@@ -1,0 +1,6 @@
+Threw 46 rows with outliers
+throwing countries ['CZ', 'DE', 'EE', 'FI', 'HR', 'HU', 'LT'] with too few datapoints (<5)
+----------- Intentional homicide -----------
+crimes ~ density + (density|country) + unemployment + (unemployment|country) + gdp + (gdp|country) + (1|country)
+Estimate2.5_ci97.5_ciSEDFT-statP-valSig
+R2c:,0.6040977014498075

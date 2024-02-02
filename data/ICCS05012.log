@@ -1,0 +1,6 @@
+Threw 43 rows with outliers
+throwing countries ['CY', 'DE', 'HR', 'LU', 'LV'] with too few datapoints (<5)
+----------- Burglary of private residential premises -----------
+crimes ~ density + (density|country) + unemployment + (unemployment|country) + gdp + (gdp|country) + (1|country)
+Estimate2.5_ci97.5_ciSEDFT-statP-valSig
+R2c:,0.7658628757037269
